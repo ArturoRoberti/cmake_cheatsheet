@@ -1,0 +1,21 @@
+\section{Deploying} \label{s:deploying}
+
+
+
+\subsection{Configuring} \label{ss:deploying/configuring}
+To configure a project, run (bash) \cmakebox{cmake -S <source-dir> -B <build-dir>}.
+If currently in the build directory, \cmakebox{-S} and \cmakebox{-B <build-dir>} can be omitted, thus only \cmakebox{cmake <source-dir>} is necessary (usually \cmakebox{cmake ..}). \\
+
+
+
+\subsection{Building} \label{ss:deploying/building}
+To build the project, run (bash) \cmakebox{make} from the build directory.
+If \cmakebox(install()) was used in the \cmakebox{CMakeLists.txt} file, run \cmakebox{make install} to install the project to the specified directory. \\
+
+
+
+\subsection{Running} \label{ss:deploying/running}
+To run an executable of the project (added via \cmakebox{add_executable()}), navigate to the build directory and run it ((bash) \cmakebox{./<executable>}).
+If the executable was previously installed to bin/, it can be run from anywhere ((bash) \cmakebox{<executable>}). \\
+
+% TODO: Include release & build type

@@ -1,0 +1,37 @@
+\section{General Commands} \label{s:general_commands}
+These commands and more can be found in the \href{https://cmake.org/cmake/help/latest/}{CMake documentation}. \\
+
+
+
+\subsection{\texttt{cmake\_minimum\_required}}
+\begin{center} \cmakebox{cmake_minimum_required(VERSION <version>)} \end{center}
+Sets the minimum required version of cmake. Needs to be the first command in the \cmakebox{CMakeLists.txt} file.
+
+
+
+\subsection{\texttt{project}}
+\begin{center} \cmakebox{project(<name> [VERSION <major>.<minor>.<patch>])} \end{center}
+Sets the name of the project, and stores it in the variable \cmakebox{PROJECT_NAME}. Needs to be the second command in the \cmakebox{CMakeLists.txt} file.
+
+
+
+\subsection{\texttt{message}}
+\begin{center} \cmakebox{message([<mode>] "<message>")} \end{center}
+\begin{align*}
+    \text{mode} \in \{ &\text{FATAL\_ERROR},\,\text{SEND\_ERROR},\,\text{WARNING},\,\text{AUTHOR\_WARNING},\, \\
+    &\text{DEPRECATION},\,\text{NOTICE},\,\text{STATUS},\,\text{VERBOSE},\,\text{DEBUG},\,\text{TRACE} \}
+\end{align*}
+Default mode is \cmakebox{NOTICE}.
+
+
+
+\subsection{\texttt{return}}
+\begin{center} \cmakebox{return()} \end{center}
+Exits the current script file.
+
+
+
+\subsection{\texttt{install}}
+\begin{center} \cmakebox{install(TARGETS <target> DESTINATION <dir>)} \end{center}
+Allows installing the specified target to the specified system directory (usually \bashbox{bin}, \bashbox{lib}, \bashbox{include}). The path is relative to the \cmakebox{CMAKE_INSTALL_PREFIX} variable (linux default \bashbox{/usr/local/}). \\
+For installation, later run \bashbox{make install} (Section \ref{ss:deploying/building}).

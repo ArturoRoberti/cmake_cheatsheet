@@ -1,0 +1,13 @@
+# VSCode
+.vscode/
+!example_project/.vscode/
+
+# LaTeX
+out/
+
+# CMake
+example_project/externals/*
+example_project/build/*
+
+# Python
+*/*.egg-info/

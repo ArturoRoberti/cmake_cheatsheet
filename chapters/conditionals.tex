@@ -1,0 +1,115 @@
+\section{Conditionals} \label{s:conditionals}
+
+
+
+\subsection{\texttt{If-Else} Statements}
+\begin{lstlisting}[style=CmakeStyle]
+if(<condition>)
+    <commands>
+elseif(<condition>)
+    <commands>
+else()
+    <commands>
+endif()
+\end{lstlisting}
+
+Conditions are case-insensitive and are evaluated as:
+\begin{itemize}
+    \item \textbf{TRUE} if \cmakebox{1} (or non-zero number), \cmakebox{ON}, \cmakebox{True}, \cmakebox{YES} or \cmakebox{Y}
+    \item \textbf{FALSE} if \cmakebox{0}, \cmakebox{OFF}, \cmakebox{False}, \cmakebox{NO}, \cmakebox{N}, \cmakebox{IGNORE}, \cmakebox{NOTFOUND}, \cmakebox{""} or ending in \cmakebox{-NOTFOUND}
+\end{itemize}
+
+
+
+\subsection{\texttt{While} Loop}
+\begin{lstlisting}[style=CmakeStyle]
+while(<condition>)
+    <commands>
+endwhile()
+\end{lstlisting}
+
+
+
+\subsection{\texttt{For} Loop} \label{ss:conditionals/for_loop}
+\begin{lstlisting}[style=CmakeStyle]
+    foreach(<loop-variable> <values>)
+        <commands>
+    endforeach()
+\end{lstlisting}
+
+Variations include (all values are positive integers):
+\begin{itemize}
+    \item \cmakebox{foreach(<loop_var> RANGE <stop>)} - Loop from 0 to \cmakebox{<stop>}
+    \item \cmakebox{foreach(<loop_var> RANGE <start> <stop> [<step>])} - Loop from \cmakebox{<start>} to \cmakebox{<stop>} with optional \cmakebox{<step>}
+    \item \cmakebox{foreach(<loop_var> IN [<list>])} - Loop over the elements in the given list
+    \item \cmakebox{foreach(<loop_var> IN ZIP_LISTS <lists>)} - Loop over the elements of multiple lists in parallel (access elements via \cmakebox{${<loop_var>_<list_index>}}, e.g. \cmakebox{${<loop_var>_0}})
+\end{itemize}
+
+
+\subsection{Existence Checks}
+% \cmakebox{if(COMMAND <command-name>)} \\
+% True if the given name is a command, macro or function that can be invoked. \\
+
+% \cmakebox{if(POLICY <policy-id>)} \\
+% True if the given name is an existing policy (of the form CMP<NNNN>). \\
+
+\begin{center} \cmakebox{if(TARGET <target-name>)} \end{center}
+True if the given name is an existing logical target name created by a call to the \cmakebox{add_executable()}, \cmakebox{add_library()}, or \cmakebox{add_custom_target()} command that has already been invoked (in any directory).
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(TEST <test-name>)} \end{center}
+True if the given name is an existing test name created by the \cmakebox{add_test()} command.
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(DEFINED <name> [CACHE{<name>}|ENV{<name>}])} \end{center}
+True if a variable, cache variable or environment variable with given <name> is defined.
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(<variable|string> IN_LIST <variable>)} \end{center}
+True if the given element is contained in the named list variable.
+
+
+
+\subsection{File Operations}
+File paths are always treated as full paths (and cannot include e.g. $\sim$). Relative paths are interpreted as relative to the current source directory. \\
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(EXISTS <path-to-file-or-directory>)} \end{center}
+True if the named file or directory exists and is readable. False if the given path is an empty string.
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(IS_xxx <path-to-file-or-directory>)} \end{center}
+\begin{align*}
+    xxx \in \{ &\text{READABLE},\,\text{WRITABLE},\,\text{EXECUTABLE},\,\text{DIRECTORY},\,\text{SYMLINK},\,\text{ABSOLUTE} \}
+\end{align*}
+True if the named file or directory has the specified property. False if the given path is an empty string.
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(<file1> IS_NEWER_THAN <file2>)} \end{center}
+True if file1 is newer than file2 or if one of the two files doesn't exist. \\
+
+
+
+\subsection{Comparisons}
+\begin{center} \cmakebox{if(<variable|string> xxx <variable|string>)} \end{center}
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{align*}
+    xxx \in \{ &\text{EQUAL},\,\text{LESS},\,\text{GREATER},\,\text{LESS\_EQUAL},\,\text{GREATER\_EQUAL} \}
+\end{align*}
+True if the given string or variable's value parses as a real number (like a C double) and satisfies the specified comparison. \\
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{align*}
+    xxx \in \{ &\text{STREQUAL},\,\text{STRLESS},\,\text{STRGREATER},\,\text{STRLESS\_EQUAL},\,\text{STRGREATER\_EQUAL} \}
+\end{align*}
+True if the given string or variable's value lexicographically satisfies the specified comparison. \\
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{align*}
+    xxx \in \{ &\text{VERSION\_LESS},\,\text{VERSION\_GREATER},\,\text{VERSION\_EQUAL},\, \\
+    &\text{VERSION\_LESS\_EQUAL},\,\text{VERSION\_GREATER\_EQUAL} \}
+\end{align*}
+Component-wise integer version number comparison (version format is major[.minor[.patch[.tweak]]], omitted components are treated as zero). Any non-integer version component or non-integer trailing part of a version component effectively truncates the string at that point. \\
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\begin{center} \cmakebox{if(<variable|string> PATH_EQUAL <variable|string>)} \end{center}
+Compares the two paths component-by-component. Only if every component of both paths match will the two paths compare equal. Multiple path separators are effectively collapsed into a single separator, but note that backslashes are not converted to forward slashes. No other path normalization is performed. \\

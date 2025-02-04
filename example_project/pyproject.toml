@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "example_py"
+version = "0.1.0"
+description = "Python bindings for the C++ example module"
+authors = [{ name = "Arturo Roberti" }]
+readme = "README.md"
+
+[tool.setuptools]
+packages = []
+include-package-data = true
+
+[tool.setuptools.package-data]
+example_py = ["build/example_py*.so"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }  # Optional, if you have dependencies

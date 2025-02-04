@@ -1,0 +1,98 @@
+\section{Main Examples} \label{s:main_examples}
+
+
+
+\subsection{File Structure} \label{ss:main_examples/file_structure}
+The desired structure is as follows:
+\dirtree{%
+.1 my\_package/.
+.2 \red{build/}.
+.2 \green{cmake/}.
+.3 script\_1.cmake.
+.3 \ldots.
+.2 \green{config/}.
+.3 config\_1.yaml.
+.3 \ldots.
+.2 \green{externals/}.
+.3 package\_1/.
+.3 \ldots.
+.2 \red{include/}.
+.3 header\_1.hpp.
+.3 \ldots.
+.2 \red{src/}.
+.3 source\_1.cpp.
+.3 \ldots.
+.2 \green{tests/}.
+.3 CMakeLists.txt.
+.3 test\_1.cpp.
+.3 \ldots.
+.2 \red{CMakelists.txt}.
+.2 \green{LICENSE}.
+.2 \green{package.xml}.
+.2 \green{pyproject.toml}.
+.2 \green{README.md}.
+}
+
+Here, red is mandatory (i.e. necessary/extremely standard practice) and green is optional (i.e. standard practice).
+Additionally, the \texttt{package.xml} file is only used for \textit{ROS} package management and the \texttt{pyproject.toml} file is only used in connection with \textit{pybind}.
+
+
+\vspace{1cm}
+\subsection{CMakeLists.txt} \label{ss:main_examples/CMakeLists.txt}
+\begin{lstlisting}[style=CmakeStyle]
+    cmake_minimum_required(VERSION 3.0)
+
+    project(example_project)
+
+    # Used to generate compile_commands.json
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+    # Add custom library
+    add_library(example_library src/example.cpp)
+    target_include_directories(example_library PUBLIC include)
+
+    # Add the executable
+    add_executable(example_executable src/example_executable.cpp)
+    target_link_libraries(example_executable example_library)
+
+    # Include external library 'Eigen3'
+    find_package(Eigen3 3.4.0 QUIET)
+    if(Eigen3_FOUND)
+            message(STATUS "Using system provided Eigen.")
+    else()
+            message(STATUS "No system Eigen found. Auto-installing.")
+            include(cmake/eigen.cmake)
+    endif()
+    target_include_directories(example_library PUBLIC ${EIGEN3_INCLUDE_DIR})
+
+    # Install the library to the system to /usr/local/lib
+    install(TARGETS example_library DESTINATION lib)
+
+    # Testing
+    option(BUILD_TESTING "Build the tests" ON)
+    if(BUILD_TESTING)
+        find_package(GTest CONFIG REQUIRED)
+        add_subdirectory(tests)
+    endif()
+
+    # Pybind
+    file(GLOB_RECURSE PYBIND_SRC src/*pybind*.cpp)
+    if(PYBIND_SRC)
+        message(STATUS "Building Python bindings.")
+
+        find_package(pybind11 2.9.1 QUIET)
+        if(pybind11_FOUND)
+            message(STATUS "Using system provided Pybind.")
+        else()
+            message(STATUS "No system Pybind found. Auto-installing.")
+            include(cmake/pybind11.cmake)
+        endif()
+        # Enable PIC (necessary for dynamic libraries)
+        set_target_properties(example_library PROPERTIES
+                            POSITION_INDEPENDENT_CODE ON)
+
+        # Add and link the pybind module
+        pybind11_add_module(example_py MODULE ${PYBIND_SRC})
+        target_link_libraries(example_py PRIVATE example_library)
+    endif()
+\end{lstlisting}

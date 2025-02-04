@@ -1,0 +1,33 @@
+\documentclass[a4paper]{article}
+\usepackage{config/packages}
+\usepackage{config/options}
+\usepackage{config/code}
+
+\title{CMake Cheatsheet (for Linux)}
+\author{Arturo Roberti}
+% \date{May 2024}
+\begin{document}
+
+\begin{multicols*}{2}\footnotesize
+    \maketitle
+
+    \input{chapters/main_examples.tex}
+    \input{chapters/general_commands.tex}
+    \input{chapters/include_libraries.tex}
+    \input{chapters/auto_installation.tex}
+    \input{chapters/variables.tex}
+    \input{chapters/conditionals.tex}
+    \input{chapters/testing.tex}
+    \input{chapters/pybind.tex}
+    \input{chapters/deploying.tex}
+\end{multicols*}
+
+% TODO
+% - Check centering
+% - Add section (flightlib) with release and debug build type
+% - Reorganize (not just "commands") - add libraries/headers; set variables; other
+% - Do testing section
+% - Do (example) section (flighlib) of how to auto-download packages via github
+% - pybind11 installation section
+
+\end{document}

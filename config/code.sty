@@ -1,0 +1,134 @@
+% Global
+\lstset{
+    basicstyle=\ttfamily\footnotesize,   % Monospaced small text
+    frame=single,                        % Single border around the listing
+    backgroundcolor=\color{gray!15},     % Light gray background (15% gray)
+    rulecolor=\color{black},             % Border color
+    xleftmargin=15pt, xrightmargin=1pt,  % Left margin for readability
+    numbers=left,                        % Line numbers on the left
+    numberstyle=\tiny\color{gray},       % Tiny gray line numbers
+    % breaklines=true,                      % Allow line breaking
+    showstringspaces=false,              % Don't put marks in string spaces
+}
+\NewDocumentCommand{\CustomCodeBox}{ m m O{} }{%
+  \NewTotalTCBox{#1}{ s v }
+  {verbatim, colback=lightgray, colframe=lightgray, top=0pt, bottom=0pt, left=0mm, right=0mm}
+  {\lstinline[language=#2, keepspaces=true, #3]^##2^}
+}
+
+% CMake
+\lstdefinelanguage{CustomCMake}{
+    sensitive=true,
+    %
+    morekeywords={cmake_minimum_required, project, add_subdirectory, add_executable, add_library, target_link_libraries, target_include_directories, find_package, include_directories, set, message, install, option, if, elseif, else, endif, foreach, endforeach, include, while, endwhile, gtest_discover_tests, ExternalProject_Add, list, file, set_target_properties, pybind11_add_module, execute_process, unset, add_custom_target, add_test}, % Primary keywords
+    keywordstyle={\color{purple}},
+    %
+    morekeywords=[2]{PUBLIC, PRIVATE, INTERFACE, REQUIRED, COMPONENTS, PATHS, CONFIG, NO_MODULE, MODULE, ON, OFF, TRUE, FALSE, VERSION, QUIET, STATUS, TARGETS, DESTINATION, GLOB, GLOB_RECURSE, APPEND, PROJECT_NAME, PROPERTIES, NOTICE, STATIC, SHARED, COMMAND, RESULT_VARIABLE, WORKING_DIRECTORY, OUTPUT_QUIET, STRING, BOOL, PATH, FILEPATH, INTERNAL, UNINITIALIZED, FORCE, CACHE, ENV, DEFINED}, % Secondary keywords
+    keywordstyle=[2]{\color{teal}},
+    %
+    morekeywords=[3]{CMAKE_EXPORT_COMPILE_COMMANDS, Eigen3, Eigen3_FOUND, EIGEN3_INCLUDE_DIR, GTest, PYBIND_SRC, BUILD_TESTING, pybind11_FOUND, POSITION_INDEPENDENT_CODE, PYBIND_SRC, pybind11, CMAKE_INSTALL_PREFIX, CMAKE_COMMAND, PROJECT_SOURCE_DIR, GoogleTest}, % Tertiary keywords
+    keywordstyle=[3]{\color{blue}},
+    %
+    comment=[l]{\#}, % Define line comments starting with "#"
+    commentstyle=\color{ForestGreen}\ttfamily, % Make comments green and monospaced
+    %
+    string=[b]",
+    stringstyle=\color{magenta},
+    %
+    moredelim=[s][\color{blue}]{<}{>} % Makes text inside <...> blue
+}
+\lstdefinestyle{CmakeStyle}{language=CustomCMake}
+\CustomCodeBox{\cmakebox}{CustomCMake}
+
+% C++
+\definecolor{preprocessorcolor}{rgb}{0.85, 0.18, 0.73} % Purple for #include
+\definecolor{libcolor}{rgb}{1.0, 0.5, 0.0}            % Orange for libraries
+\definecolor{namespacecolor}{rgb}{0.0, 0.6, 1.0}      % Cyan for namespace
+\definecolor{classcolor}{rgb}{0.0, 0.8, 0.4}          % Green for classes
+\definecolor{functioncolor}{rgb}{0.0, 0.5, 1.0}       % Blue for functions
+\definecolor{typecolor}{rgb}{0.0, 0.8, 1.0}           % Cyan for Eigen:: types
+\definecolor{commentcolor}{rgb}{0.13, 0.55, 0.13}     % Green for comments
+\definecolor{stringcolor}{rgb}{0.86, 0.08, 0.24}      % Red for strings
+\lstdefinelanguage{CustomCpp}{
+    sensitive=true,
+    %
+    morekeywords={int, float, double, char, bool, void, short, long, signed, unsigned, auto, const, volatile, static, extern, mutable, register, thread_local, inline, explicit, virtual, override, final, constexpr, decltype, typename, using, namespace, template, class, struct, enum, union, private, protected, public, friend, this, new, delete, return, sizeof, dynamic_cast, static_cast, reinterpret_cast, const_cast, typeid, operator, try, catch, throw, noexcept, default, delete, export, alignas, alignof, concept, requires},
+    keywordstyle=\color{classcolor},
+    %
+    morekeywords=[2]{if, else, switch, case, for, while, do, break, continue, goto, typedef, typename},
+    keywordstyle=[2]{\color{namespacecolor}},
+    %
+    morekeywords=[3]{std, cout, cin, endl, string, vector, map, unordered_map, set, unordered_set, pair, make_pair, shared_ptr, unique_ptr, weak_ptr, tuple, optional, variant},
+    keywordstyle=[3]{\color{typecolor}},
+    %
+    morekeywords=[4]{TEST, EXPECT_EQ},
+    keywordstyle=[4]{\color{blue}}, % special characters
+    %
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{commentcolor}\ttfamily,
+    %
+    string=[b]",
+    % stringstyle=\color{stringcolor},
+    stringstyle=\color{libcolor},
+    %
+    moredelim=[s][\color{preprocessorcolor}]{\#}{\ },  % Preprocessor directives
+    moredelim=[s][\color{libcolor}]{<}{>},  % Library headers
+    moredelim=[s][\color{namespacecolor}]{:}{:},  % Namespace-like behavior
+}
+\lstdefinestyle{CppStyle}{language=CustomCpp}
+\CustomCodeBox{\cppbox}{CustomCpp}
+
+% Bash
+\lstdefinelanguage{CustomBash}{
+    sensitive=true,
+    morekeywords={if, then, else, elif, fi, for, while, until, do, done, in, case, esac, select, function, return, export, unset, local, source, test, [[, ]], &&, ||, !, &&&, |||}
+    keywordstyle=\color{purple}, % Highlight Bash keywords
+    %
+    morekeywords=[2]{export, make, echo, read, printf, pwd, ls, cd, rm, mv, cp, touch, cat, head, tail, grep, awk, sed, curl, wget, sudo, tar, unzip, zip, chmod, chown, ps, top, kill, exit, trap, cmake, ctest},
+    keywordstyle=[2]{\color{teal}}, % Highlight common bash commands and utilities
+    %
+    comment=[l]{\#}, % Single-line comments start with '#'
+    morecomment=[s]{/*}{*/}, % Multi-line comments in Bash (less common, but supported)
+    commentstyle=\color{ForestGreen}\ttfamily, % Comment style
+    %
+    string=[b]", % Double-quoted strings
+    stringstyle=\color{stringcolor}, % String style color
+    %
+    moredelim=[s][\color{preprocessorcolor}]{\#}{\ },  % Preprocessor-like behavior for comments or special instructions
+    moredelim=[s][\color{blue}]{<}{>}, % Angle brackets used in file redirection
+    moredelim=[s][\color{namespacecolor}]{\$}{\ }, % Highlight \$ (variable dereferencing) as namespace-like
+    moredelim=[s][\color{functioncolor}]{\$(}{\ }, % Inline command substitution
+    moredelim=[s][\color{functioncolor}]{\`}{\ }, % Backticks (another form of command substitution)
+}
+\lstdefinestyle{BashStyle}{language=CustomBash}
+\CustomCodeBox{\bashbox}{CustomBash}
+
+% Python
+\lstdefinelanguage{CustomPython}{
+    sensitive=true,
+    morekeywords={False, None, True, and, as, assert, async, await, break, class, continue, def, del, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, with, yield},
+    keywordstyle=\color{classcolor},
+    %
+    morekeywords=[2]{self, cls},
+    keywordstyle=[2]{\color{namespacecolor}},
+    %
+    morekeywords=[3]{int, float, str, list, dict, tuple, set, frozenset, bool, complex, bytes, bytearray, range, object, type, NotImplemented, Ellipsis},
+    keywordstyle=[3]{\color{typecolor}},
+    %
+    morekeywords=[4]{print, input, len, sorted, map, filter, reduce, all, any, sum, zip, isinstance, issubclass, callable, property, super},
+    keywordstyle=[4]{\color{functioncolor}},
+    %
+    comment=[l]{\#},
+    commentstyle=\color{commentcolor}\ttfamily,
+    %
+    string=[b]"`,
+    stringstyle=\color{stringcolor},
+    %
+    moredelim=[s][\color{preprocessorcolor}]{import}{\ },  % Import statements
+    moredelim=[s][\color{functioncolor}]{def}{\ },  % Function definition
+    moredelim=[s][\color{functioncolor}]{class}{\ },  % Class definition
+    moredelim=[s][\color{functioncolor}]{return}{\ },  % Return statements
+}
+\lstdefinestyle{PythonStyle}{language=CustomPython}
+\CustomCodeBox{\pybox}{CustomPython}

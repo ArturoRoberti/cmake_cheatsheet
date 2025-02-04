@@ -1,0 +1,91 @@
+% See flightlib; via github and .cmake file
+\section{Auto Installation} \label{s:auto_installation}
+For the auto-installation of external libraries, it best best to use two cmake scripts (names arbitrary). I can best explain it via the following eigen3 example files.
+
+
+
+% \subsection{eigen\_download.cmake}
+% \begin{lstlisting}[style=CmakeStyle]
+%     cmake_minimum_required(VERSION 3.0)
+
+%     project(eigen-external)
+
+%     include(ExternalProject)
+%     ExternalProject_Add(eigen
+%         GIT_REPOSITORY    https://gitlab.com/libeigen/eigen.git
+%         GIT_TAG           3.4.0
+%         SOURCE_DIR        "${PROJECT_SOURCE_DIR}/externals/eigen/eigen3"
+%         CONFIGURE_COMMAND ""
+%         BUILD_COMMAND     ""
+%         INSTALL_COMMAND   ""
+%         TEST_COMMAND      ""
+%         UPDATE_DISCONNECTED ON
+%     )
+% \end{lstlisting}
+% This is later used as a script to download Eigen3. The external \cmakebox{ExternalProject} module is used to download repos from gitlab or girhub, depending on where it is hosted. For more infos and further ways of downloading exteral packages via cmake see the \href{https://cmake.org/cmake/help/v3.0/module/ExternalProject.html}{CMake documentation}.
+
+
+
+\subsection{eigen.cmake} \label{ss:auto_installation/eigen.cmake}
+This file is used by the main \cmakebox{CMakeLists.txt} file to auto-intall Eigen3 if necessary. For this reason, it also sets \cmakebox{EIGEN3_INCLUDE_DIR} to the correct path at the end.
+\begin{lstlisting}[style=CmakeStyle]
+    # Download and unpack eigen at configure time
+    message(STATUS "Getting Eigen...")
+
+    configure_file(
+        cmake/eigen_download.cmake
+        ${PROJECT_SOURCE_DIR}/externals/eigen/CMakeLists.txt)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/externals/eigen
+        OUTPUT_QUIET)
+    if(result)
+        message(FATAL_ERROR "Download of Eigen failed: ${result}")
+    endif()
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} --build .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/externals/eigen
+        OUTPUT_QUIET)
+    if(result)
+        message(FATAL_ERROR "Build step for eigen failed: ${result}")
+    endif()
+
+    message(STATUS "Eigen downloaded!")
+
+    set(EIGEN3_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/externals/eigen/eigen3)
+\end{lstlisting}
+
+In essence, there are 3 steps:
+\begin{enumerate}
+    \item Copy the \cmakebox{eigen_download.cmake} file to a useable location
+    \item Download Eigen3
+    \item Build Eigen3
+\end{enumerate}
+In the latter two, the working directory is set and the (BOOL) success of the operation is saved in "result". Furthermore, \cmakebox{COMMAND ${CMAKE_COMMAND}} translates to running \bashbox{cmake} in the terminal
+(e.g. \cmakebox{execute_process(COMMAND ${CMAKE_COMMAND} --build . ...)} corresponds to \bashbox{cmake --build . ...} in a terminal). Lastly, \cmakebox{CMAKE_GENERATOR} is a default variable that specifies the build system to use (Linux/MacOS: \cmakebox{Unix Makefiles}).
+
+
+
+\subsection{eigen\_download.cmake} \label{ss:auto_installation/eigen_download.cmake}
+\begin{lstlisting}[style=CmakeStyle]
+    cmake_minimum_required(VERSION 3.0)
+
+    project(eigen-external)
+
+    include(ExternalProject)
+    ExternalProject_Add(eigen
+        GIT_REPOSITORY    https://gitlab.com/libeigen/eigen.git
+        GIT_TAG           3.4.0
+        SOURCE_DIR        "${PROJECT_SOURCE_DIR}/externals/eigen/eigen3"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND     ""
+        INSTALL_COMMAND   ""
+        TEST_COMMAND      ""
+        UPDATE_DISCONNECTED ON
+    )
+\end{lstlisting}
+This is later used as a script to download Eigen3. The external \cmakebox{ExternalProject} module is used to download repos from gitlab or girhub, depending on where it is hosted. For more infos and further ways of downloading exteral packages via cmake see the \href{https://cmake.org/cmake/help/v3.0/module/ExternalProject.html}{CMake documentation}.

@@ -1,0 +1,83 @@
+% pybind with examples
+\vspace{2cm}
+\section{Pybind11} \label{s:pybind11}
+Used to create a python package out of a C++ library and requires \texttt{CMake}, \texttt{C++} and a \texttt{pyproject.toml} file.
+
+\subsection{CMake}
+The CMake implementation example is given in the main example. The main steps include:
+\begin{itemize}
+    \item \cmakebox{set_target_properties(example_library PROPERTIES POSITION_INDEPENDENT_CODE ON)} - Necessary, as the later built dynamic library (\bashbox{.so}-file) will not have a permanent memory address
+    \item \cmakebox{pybind11_add_module(example_py MODULE ${PYBIND_SRC})} - Custom Pybind command defining the new python module
+    \item \cmakebox{target_link_libraries(example_py PRIVATE example_library)} - Link the custom library to the python module
+\end{itemize}
+
+Furthermore, the \texttt{pybind11.cmake} and \texttt{pybind11\_download.cmake} files are similar to their \textit{eigen} equivalents (Sections \ref{ss:auto_installation/eigen.cmake}, \ref{ss:auto_installation/eigen_download.cmake}).
+Additionally, \textit{pybind} is linked to the main library via \cmakebox{add_subdirectory(${PROJECT_SOURCE_DIR}/externals/pybind/pybind11 EXCLUDE_FROM_ALL)}.
+
+\subsection{C++}
+Below an example of a \texttt{pybind\_wrapper.cpp} file used in CMake to create a python module:
+\begin{lstlisting}[style=CppStyle]
+    #include <pybind11/eigen.h>
+    #include <pybind11/pybind11.h>
+    #include <sstream>
+
+    #include "example.hpp"
+
+    namespace py = pybind11;
+    using namespace example;
+
+    PYBIND11_MODULE(example_py, m) {
+        py::class_<ExampleClass>(m, "ExampleClassPy")
+            // Constructor(s)
+            .def(py::init<>())
+
+            // Singular methods
+            .def("getSize", &ExampleClass::getSize)
+            .def("getVector", &ExampleClass::getVector)
+
+            // Overloaded method  - No input
+            .def("printClassVector",
+                 static_cast<void (ExampleClass::*)()>
+                 (&ExampleClass::printVector))
+
+            // Overloaded method - Vector input
+            .def("printVector",
+                 static_cast<void (ExampleClass::*)(const Eigen::VectorXd&)>
+                 (&ExampleClass::printVector));
+
+        // Further classes and functions...
+    }
+\end{lstlisting}
+For further information, see the \href{https://pybind11.readthedocs.io/en/stable/}{pybind documentation}.
+
+\subsection{Pip installation}
+A pyproject.toml file is necessary to install the python package via pip. An example is given below:
+\begin{lstlisting}[style=CmakeStyle]
+    [build-system]
+    requires = ["setuptools", "wheel"]
+    build-backend = "setuptools.build_meta"
+
+    [project]
+    name = "example_py"
+    version = "0.1.0"
+    description = "Python bindings for the C++ example module"
+    authors = [{ name = "Arturo Roberti" }]
+    readme = "README.md"
+
+    [tool.setuptools]
+    packages = []
+    include-package-data = true
+
+    [tool.setuptools.package-data]
+    example_py = ["build/example_py*.so"]
+
+    [tool.setuptools.dynamic]
+    dependencies = { file = ["requirements.txt"] }  # Optional
+\end{lstlisting}
+
+This file is best added to the main directory and not the build directory to avoid accidental deletion.
+Then, the package can be installed from the main directory via \bashbox{pip install -e .} (\textit{editable mode} flag \texttt{-e} optional). However, as the shared library (\bashbox{.so}-file) is built in the \textit{build} directory, the \texttt{PYTHONPATH} variable must be extended to include the build directory.
+This can be done by adding the following line to the \texttt{.bashrc} file:
+\begin{lstlisting}[style=BashStyle]
+    export PYTHONPATH=$PYTHONPATH:/path/to/build
+\end{lstlisting}

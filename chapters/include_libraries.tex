@@ -1,0 +1,81 @@
+% \vspace{10cm}
+\vspace{3cm}
+\section{Include Libraries} \label{s:include_libraries}
+
+
+
+\subsection{Own library}
+
+\subsubsection{\texttt{add\_library}}
+\begin{center} \cmakebox{add_library(<name> [STATIC | SHARED] <source1> <source2> ...)} \end{center}
+Creates a library target with the given name and source files (.cpp; cannot run stand-alone). 
+\begin{itemize}
+    \item \cmakebox{STATIC} - Static library (.a, .lib) - copied into the target at build time.
+    \item \cmakebox{SHARED} - Dynamic library (.so, .dll) - linked at runtime (i.e. can be updated without recompiling).
+\end{itemize}
+If neither is specified, the default depends on the \cmakebox{BUILD_SHARED_LIBS} variable.
+
+\subsubsection{\texttt{include\_directories}}
+\begin{center} \cmakebox{include_directories(<dir1> <dir2> ...)} \end{center}
+Include directories containing header files for the entire project. Preferably, use \cmakebox{target_include_directories} instead.
+
+\subsubsection{\texttt{target\_include\_directories}}
+\begin{center} \cmakebox{target_include_directories(<target> [PUBLIC | PRIVATE] <dir1> <dir2> ...)} \end{center}
+Include directories containing header files for a specific target.
+
+\subsubsection{\texttt{add\_executable}}
+\begin{center} \cmakebox{add_executable(<name> <source1> <source2> ...)} \end{center}
+Adds executables (.cpp; can run stand-alone) to a (new) target. \\
+
+Here, the target is usually itself, not the overarching library target, as the library should be independent of the executable. Instead, the library is later linked to the executable target as if it was an external library. \\
+
+\subsubsection{\texttt{include}}
+\begin{center} \cmakebox{include(<file_basename>.cmake)} \end{center}
+Include another CMake script file in the current script location.
+
+\subsubsection{\texttt{file}}
+\begin{center} \cmakebox{file([GLOB | GLOB_RECURSE] <variable> <pattern1> <pattern1> ...)} \end{center}
+Saves a list of file paths into \cmakebox{<variable>} matching the specified patterns (recursively). Example: \\
+\cmakebox{file(GLOB_RECURSE FLIGHTLIB src/dir1/*.cpp src/dir2/*.cpp)}
+
+Later used to add the library, e.g. \\
+\cmakebox{add_library(${PROJECT_NAME} ${FLIGHTLIB})}
+
+
+\newpage
+\subsection{External libraries}
+
+\subsubsection{\texttt{find\_package}}
+\begin{center} \cmakebox{find_package(<PackageName> [<version>] [QUIET] [REQUIRED] [NO_MODULE | CONFIG])} \end{center}
+Finds and loads a package on the system. Easiest way to include external libraries, if possible.
+\begin{itemize}
+    \item \cmakebox{QUIET} suppresses info\&warning output of the package search
+    \item \cmakebox{REQUIRED} stops the configuration process if the package is not found. If not set, the package search can be checked with the boolean \cmakebox{<PackageName>_FOUND} (\cmakebox{find_package()} sometimes also sets other variables such as \cmakebox{<PackageName>_INCLUDE_DIR}, \cmakebox{<PackageName>_EXECUTABLE}, \ldots)
+    \item \cmakebox{NO_MODULE} - Only search for a \cmakebox{Find<PackageName>.cmake} file to find the package
+    \item \cmakebox{CONFIG} - Only search for a \cmakebox{<PackageName>Config.cmake} (or \cmakebox{<lowercasePackageName>-config.cmake}) file to find the package
+\end{itemize}
+
+If neither \cmakebox{NO_MODULE} nor \cmakebox{CONFIG} is specified, \cmakebox{find_package} will first search for a \cmakebox{Find<PackageName>.cmake} file and then for a \cmakebox{<PackageName>Config.cmake} file. \\
+
+To find the exact package name (case-sensitive), use one of
+\begin{itemize}
+    \item \bashbox{sudo find /usr/ -type f -name "Find*.cmake"}
+    \item \bashbox{sudo find /usr/ -type f -name "*Config.cmake"}
+    \item googling \texttt{$\sim$\textit{PackageName} cmake}
+\end{itemize}
+From the first two, the package name can be inferred. I strongly recommend using \bashbox{| grep -i <pkg>} to filter the output (\bashbox{<pkg>} being a sure part of the package name). \\
+
+Many packages can be installed via apt (see \texttt{Ubuntu Version $\Rightarrow$ Library development} in \href{https://packages.ubuntu.com/}{Ubuntu Packages Repository}, e.g. \bashbox{sudo apt install libeigen3-dev}). In that case, the version can be found via \bashbox{apt show <package-name> | grep Version}.
+Otherwise, refer to the \textit{(auto)installation} section (Section \ref{s:auto_installation}). Keep in mind that the version is an opional specification of \cmakebox{find_package()}.
+
+\subsubsection{\texttt{add\_subdirectory}}
+\begin{center} \cmakebox{add_subdirectory(<dir>)} \end{center}
+Add a subdirectory (external package with a \cmakebox{CMakeLists.txt} file) to the build. The \cmakebox{CMakeLists.txt} file in the specified directory will be processed.
+
+\subsubsection{\texttt{link\_libraries}}
+\begin{center} \cmakebox{link_libraries(<library1>.end <library2>.end ...)} \end{center}
+Links libraries ($\text{end} \in \text{\{.a, .lib, \{\}, .so, .dll\}}$) to all future project targets. Preferably, use \cmakebox{target_link_libraries} instead. 
+
+\subsubsection{\texttt{target\_link\_libraries}}
+\begin{center} \cmakebox{target_link_libraries(<target> [PUBLIC | PRIVATE] <library1>.end <library2>.end ...)} \end{center}
+Links libraries ($\text{end} \in \text{\{.a, .lib, \{\}, .so, .dll\}}$) to a specific target.

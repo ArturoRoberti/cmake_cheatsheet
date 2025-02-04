@@ -1,0 +1,105 @@
+\section{Variables} \label{s:variables}
+
+
+
+\subsection{Base Types} \label{ss:variables/base_types}
+The existing variable types are:
+\begin{itemize}
+    \item \cmakebox{STRING} - Generic string value
+    \item \cmakebox{BOOL} - Boolean ON/OFF value
+    \item \cmakebox{PATH} - Path to a directory
+    \item \cmakebox{FILEPATH} - Path to a file
+    \item \cmakebox{INTERNAL} - Do not present in GUI at all
+    \item \cmakebox{STATIC} - Value managed by CMake, do not change
+    \item \cmakebox{UNINITIALIZED} - Type not yet specified
+\end{itemize}
+
+
+
+\subsection{Lists}
+For the following and many other commands, see \href{https://cmake.org/cmake/help/latest/command/list.html}{CMake documentation}.
+
+\subsubsection{Populating lists}
+Lists are first defined via \cmakebox{set(<list_name>) ["<value1>" "<value2>" ...]} and later increased via \cmakebox{list(APPEND <list_name> "<value>")}. \\
+Alternatively, for filenames, use \cmakebox{file([GLOB | GLOB_RECURSE] <list_name> <pattern1> <pattern2> ...)}, e.g. \cmakebox{file(GLOB_RECURSE <list_name> src/*.cpp)}.
+
+\subsubsection{Using lists}
+To access the elements of a list, use \cmakebox{${<list_name>_<index>}}, possibly within a for loop (Section \ref{ss:conditionals/for_loop}). \\
+Lists of filenames can be directly used in the \cmakebox{add_library()} or \cmakebox{add_executable()} commands, e.g. \cmakebox{add_library(${PROJECT_NAME} <list_name>)}.
+
+
+
+\subsection{Set Variables}
+
+\subsubsection{\texttt{option}}
+\begin{center} \cmakebox{option(<variable> "<help text>" <value>)} \end{center}
+Defines a boolean variable as \cmakebox{ON} or \cmakebox{OFF} (default). If already defined, it will NOT be changed.
+
+\subsubsection{\texttt{set}}
+\begin{center} \cmakebox{set(<variable> [<value>])} \end{center}
+Assign a value to a variable. If \cmakebox{<value>} is not provided, the variable is unset (set to an empty string; equivalent to \cmakebox{unset(<variable>)}).
+
+\subsubsection{\texttt{set}}
+\begin{center} \cmakebox{set(<variable> <value>... CACHE <type> <docstring> [FORCE])} \end{center}
+Set a variable to a value and store it in the cache (i.e. is not re-built). \cmakebox{<type>} is one of the base types (Section \ref{ss:variables/base_types}). The \cmakebox{FORCE} option will overwrite the variable in the cache even if it is already defined.
+
+Example: \cmakebox{set(TEST "Hello, World!" CACHE STRING "Test variable")}
+
+
+
+
+% TODO: Following 2 commands
+
+% \subsubsection{\texttt{set\_property}} % for exact GLOBAL/TARGET/... details see https://cmake.org/cmake/help/latest/command/set_property.html#command:set_property
+% {\centering\cmakebox{set_property([GLOBAL | TARGET <target>] PROPERTY <prop> <value>)}} \\
+% Most (if not all) should simply be settable using \cmakebox{set}. \\
+% Existing properties are:
+% \begin{itemize}
+%     \item \cmakebox{abc} - description
+%     \item \ldots
+% \end{itemize}
+% GLOBAL:
+% CMAKE_CXX_STANDARD: Sets the global C++ standard version for the entire project.
+% CMAKE_C_FLAGS: Global C compiler flags.
+% CMAKE_CXX_FLAGS: Global C++ compiler flags.
+% CMAKE_INSTALL_PREFIX: Defines the default installation path.
+% TARGET:
+% SOURCES: Adds source files to the target.
+% INCLUDE_DIRECTORIES: Adds include directories for the target.
+% COMPILE_OPTIONS: Adds compile options to the target.
+% LINK_FLAGS: Adds linker flags for a target.
+% DIRECTORY:
+% CMAKE_BUILD_TYPE: Sets the build type (e.g., Debug, Release).
+% CMAKE_INCLUDE_PATH: Sets the path to search for CMake include files.
+% CMAKE_LIBRARY_PATH: Sets the path to search for libraries.
+% SOURCE:
+% HEADER_FILE_ONLY: Marks a source file as a header-only file.
+% FILE:
+% FLAGS: Sets the properties of a file (e.g., source file properties).
+
+% \subsubsection{\texttt{set\_target\_properties}}
+% {\centering\cmakebox{set_target_properties(<target> PROPERTIES <prop> <value>)}}
+% Existing target properties are:
+% \begin{itemize}
+%     \item \cmakebox{abc} - description
+%     \item \ldots
+% \end{itemize}
+% ARCHIVE_OUTPUT_DIRECTORY: Specifies the output directory for static libraries.
+% LIBRARY_OUTPUT_DIRECTORY: Specifies the output directory for shared libraries.
+% RUNTIME_OUTPUT_DIRECTORY: Specifies the output directory for executables.
+% LINKER_LANGUAGE: Specifies the language to be used by the linker (e.g., CXX, C, Fortran).
+% COMPILE_DEFINITIONS: Adds preprocessor definitions to a target.
+% COMPILE_OPTIONS: Adds compile flags/options for a target.
+% INCLUDE_DIRECTORIES: Specifies directories to be added to the target's include search path.
+% INTERFACE_INCLUDE_DIRECTORIES: Specifies include directories that are used by the target’s consumers.
+% PUBLIC/PRIVATE/INTERFACE: These are used to define whether a property is used only by the target (PRIVATE), is used by the target and also exposed to consumers (PUBLIC), or only exposed to consumers (INTERFACE).
+% CXX_STANDARD: Specifies the C++ standard to be used for the target (e.g., 11, 14, 17).
+% OUTPUT_NAME: Defines the name of the output binary.
+% VERSION: Specifies the version number of the target (commonly used for libraries).
+% SOVERSION: Specifies the shared library version (useful for shared libraries).
+% FOLDER: Specifies the folder that the target will appear in within IDEs (e.g., Visual Studio).
+% WIN32_EXECUTABLE: Specifies if a target is a Windows executable.
+% POSITION_INDEPENDENT_CODE: If set to true, enables the generation of position-independent code (e.g., for shared libraries).
+% CXX_FLAGS: Adds flags specific to the C++ compiler.
+% C_FLAGS: Adds flags specific to the C compiler.
+% CUDA_ARCHITECTURES: Defines the CUDA architecture for a target (if CUDA is used).

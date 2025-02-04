@@ -1,0 +1,75 @@
+\section{Testing} \label{s:testing}
+To test features of a project, both CMake and C++ code are involved. Make sure to have the \cmakebox{GTest} library installed (\bashbox{sudo apt install libgtest-dev}).
+
+\subsection{CMake}
+Add the following at the end of the main \cmakebox{CMakeLists.txt} file:
+\begin{lstlisting}[style=CmakeStyle]
+    # Testing
+    find_package(GTest CONFIG REQUIRED)
+    add_subdirectory(tests)
+\end{lstlisting}
+
+Create a \cmakebox{tests} folder with its own \cmakebox{CMakeLists.txt} file:
+\begin{lstlisting}[style=CmakeStyle]
+    include(GoogleTest)
+
+    add_executable(test_vector test_vector.cpp)
+
+    target_link_libraries(test_vector PRIVATE
+        example_library
+        GTest::gtest_main
+    )
+
+    gtest_discover_tests(test_vector)
+\end{lstlisting}
+The above example is an example of a single test using a \textit{test\_vector.cpp} file in the \textit{tests} directory. The example can be repeated with further \textit{.cpp} files.
+
+
+
+\subsection{C++}
+In each \textit{test\_<feature>.cpp} file, include a variation of the following example:
+\begin{lstlisting}[style=CppStyle]
+    #include <gtest/gtest.h>
+    #include "example.hpp"
+
+    TEST(VectorTests, TestSize) {
+        example::ExampleClass ex;
+        EXPECT_EQ(ex.getSize(), 3);
+    }
+
+    ...
+\end{lstlisting}
+The first input to \cmakebox{TEST} is the testing group name, and the second is the specific test name. Multiple tests can be combined in the same group for readability purposes. In each test, multiple assertions can be made.
+
+\subsubsection{Available testing macros}
+In general, assertion macros start with \cmakebox{EXPECT_} or \cmakebox{ASSERT_}. The former continues testing even if the condition fails, while the latter stops the test. Either assertion then continues with:
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\textbf{Basic Assertions:} \vspace{0.1cm} \\
+\cmakebox{TRUE(<condition>)}, \cmakebox{FALSE(<condition>)}, \cmakebox{EQ(<arg1>, <arg2>)}, \cmakebox{NE(<arg1>, <arg2>)}, \cmakebox{LT(<arg1>, <arg2>)}, \cmakebox{LE(<arg1>, <arg2>)}, \cmakebox{GT(<arg1>, <arg2>)}, \cmakebox{GE(<arg1>, <arg2>)}
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\textbf{Floating-Point Comparison Assertions:} \vspace{0.1cm} \\
+\cmakebox{FLOAT_EQ(<arg1>, <arg2>)}, \cmakebox{DOUBLE_EQ(<arg1>, <arg2>)}, \cmakebox{NEAR(<arg1>, <arg2>, <tolerance>)}
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\textbf{String Assertions:} \vspace{0.1cm} \\
+\cmakebox{STREQ(<arg1>, <arg2>)}, \cmakebox{STRNE(<arg1>, <arg2>)}
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+\textbf{Container Assertions:} \vspace{0.1cm} \\
+\cmakebox{THAT(<arg1>, testing::ElementsAre(<el1>, ...))}, \\
+\cmakebox{THAT(<arg1>, testing::UnorderedElementsAre(<el1>, ...))}
+
+\noindent\makebox[\linewidth]{\rule{\columnwidth}{1pt}}
+For custom assertions (non-basic types; e.g. matrix comparison), use \cmakebox{ASSERT_EQ} and \cmakebox{EXPECT_EQ} with custom comparison functions.
+
+
+
+\subsection{Running}
+To run the tests, navigate to the build directory and run
+\begin{itemize}
+    \item \bashbox{ctest} to run all tests
+    \item \bashbox{ctest -R <test-group>} to run all tests in a specific group
+    \item \bashbox{ctest -R <test-group>.<test-name>} to run a specific test
+\end{itemize}
